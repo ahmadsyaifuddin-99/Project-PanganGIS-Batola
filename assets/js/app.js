@@ -70,15 +70,17 @@ function resetHighlight(e) {
     info.update();
 }
 
-// Zoom to feature (hindari lompat/zoom-out jika poligon di luar area yang dilihat)
+// Batas wilayah Batola untuk mendeteksi poligon outlier (mis. KURIPAN)
+const BATOLA_BOUNDS = L.latLngBounds([[-3.75, 114.1], [-2.3, 115.2]]);
+
+// Zoom to feature (hindari lompat/zoom-out jika poligon di luar wilayah Batola)
 function zoomToFeature(e) {
     var layer = e.target;
     var bounds = layer.getBounds();
 
-    // Poligon berada jauh di luar viewport (mis. KURIPAN yang koordinatnya di luar Batola)
-    if (!map.getBounds().intersects(bounds)) {
+    // Poligon di luar Batola (mis. KURIPAN) — diam, tidak pindah & tidak zoom-out
+    if (!BATOLA_BOUNDS.intersects(bounds)) {
         map.closePopup();
-        map.setView(map.getCenter(), Math.min(Math.max(map.getZoom(), 11), 13));
         return;
     }
 
