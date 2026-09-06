@@ -38,11 +38,11 @@ function getColor(d) {
 function style(feature) {
     return {
         fillColor: getColor(feature.properties.PANGAN[selectedPangan]),
-        weight: 2,
+        weight: 1.5,
         opacity: 1,
-        color: 'white',
-        dashArray: '3',
-        fillOpacity: 0.7
+        color: '#064e3b',
+        dashArray: '',
+        fillOpacity: 0.85
     };
 }
 
@@ -51,10 +51,10 @@ function highlightFeature(e) {
     var layer = e.target;
 
     layer.setStyle({
-        weight: 5,
-        color: '#666',
+        weight: 3,
+        color: '#022c22',
         dashArray: '',
-        fillOpacity: 0.7
+        fillOpacity: 0.95
     });
 
     if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
@@ -70,9 +70,42 @@ function resetHighlight(e) {
     info.update();
 }
 
-// Zoom to feature
+// Zoom to feature (hindari lompat/zoom-out jika poligon di luar area yang dilihat)
 function zoomToFeature(e) {
-    map.fitBounds(e.target.getBounds());
+    var layer = e.target;
+    var bounds = layer.getBounds();
+
+    // Poligon berada jauh di luar viewport (mis. KURIPAN yang koordinatnya di luar Batola)
+    if (!map.getBounds().intersects(bounds)) {
+        map.closePopup();
+        map.setView(map.getCenter(), Math.min(Math.max(map.getZoom(), 11), 13));
+        return;
+    }
+
+    map.fitBounds(bounds, { maxZoom: 14, padding: [20, 20] });
+}
+
+// Komoditas urut sesuai dropdown
+const KOMODITAS = [
+    ["PADI", "Padi"],
+    ["JAGUNG", "Jagung"],
+    ["KEDELAI", "Kedelai"],
+    ["KACANG HIJAU", "Kacang Hijau"],
+    ["UBI KAYU", "Ubi Kayu"],
+    ["UBI JALAR", "Ubi Jalar"]
+];
+
+function numberFormat(n) {
+    return Number(n).toLocaleString('id-ID');
+}
+
+// Popup berisi rincian semua komoditas
+function popupContent(properties) {
+    let rows = KOMODITAS.map(function (k) {
+        return '<tr><th>' + k[1] + '</th><td>' + numberFormat(properties.PANGAN[k[0]]) + ' ton</td></tr>';
+    }).join('');
+    return '<p class="popup-title">' + properties.KECAMATAN + ' 🌾</p>' +
+        '<table class="popup-table"><tbody>' + rows + '</tbody></table>';
 }
 
 // onEachFeature function
@@ -82,6 +115,7 @@ function onEachFeature(feature, layer) {
         mouseout: resetHighlight,
         click: zoomToFeature
     });
+    layer.bindPopup(popupContent(feature.properties), { autoPan: false });
 }
 
 map.attributionControl.addAttribution('Produksi Pangan &copy; <a href="https://baritokualakab.bps.go.id/">BPS Batola</a>');
@@ -111,8 +145,12 @@ info.onAdd = function (_map) {
 
 // Method to update info control based on feature properties
 info.update = function (props) {
-    this._div.innerHTML = '<h4>Produksi Pangan di Kab. Batola 🌾</h4>' +  (props ?
-        '<b>' + props.KECAMATAN + '</b><br />' + selectedPangan + ': ' + props.PANGAN[selectedPangan] + ' /ton'
+    var label = 'Pangan';
+    for (var i = 0; i < KOMODITAS.length; i++) {
+        if (KOMODITAS[i][0] === selectedPangan) { label = KOMODITAS[i][1]; break; }
+    }
+    this._div.innerHTML = '<h4>Produksi Pangan di Kab. Batola 🌾</h4>' + (props ?
+        '<b>' + props.KECAMATAN + '</b><br />' + label + ': ' + numberFormat(props.PANGAN[selectedPangan]) + ' ton'
         : 'Arahkan kursor ke Kecamatan');
 };
 

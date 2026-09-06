@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <title>WebGIS Pangan Batola</title>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGIS Pangan Batola</title>
+
     <meta property="og:image" content="https://i.ibb.co.com/9szddFs/sawah.jpg">
     <meta property="og:title" content="WebGIS Pangan GIS BATOLA" />
     <meta property="og:description" content="Produk Pangan Unggulan di Kabupaten Batola" />
@@ -13,62 +14,125 @@
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="author" content="Ahmad Syaifuddin">
+
     <link rel="shortcut icon" type="image/x-icon" href="assets/images/sawah.ico">
     <link rel="icon" type="image/jpeg" sizes="16x16" href="assets/images/sawah.jpeg">
-    <link rel="stylesheet" href="assets/css/style.css">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="assets/css/style.css">
+
     <style>
-        #map { height: 600px; }
-        .info { padding: 6px 8px; background: white; background: rgba(255, 255, 255, 0.8); box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); border-radius: 5px; }
-        .info h4 { margin: 0 0 5px; color: #5a5959; }
-        .legend { text-align: left; line-height: 18px; color: #555; }
-        .legend i { width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7; }
-        #panganSelect { margin: 10px; }
+        body { font-family: 'Inter', system-ui, sans-serif; }
     </style>
-    
 </head>
-<body>
-    <div class="judul">            
-        <h3><b> WebGIS Pangan Batola 🌾</b></h3>
-    </div>
+<body class="min-h-screen bg-gradient-to-b from-green-50 via-slate-50 to-emerald-50 text-slate-800">
 
-    <div id="map"></div>
-    <select id="panganSelect">
-        <option value="PADI">Padi</option>
-        <option value="JAGUNG">Jagung</option>
-        <option value="KEDELAI">Kedelai</option>
-        <option value="KACANG HIJAU">Kacang Hijau</option>
-        <option value="UBI KAYU">Ubi Kayu</option>
-        <option value="UBI JALAR">Ubi Jalar</option>
-    </select>
+    <!-- Header -->
+    <header class="sticky top-0 z-[1001] bg-gradient-to-r from-green-800 via-emerald-700 to-lime-700 text-white shadow-lg">
+        <div class="max-w-6xl mx-auto px-4 py-3.5 flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3 min-w-0">
+                <img src="assets/images/sawah.jpeg" alt="Sawah"
+                     class="w-11 h-11 md:w-12 md:h-12 rounded-full object-cover ring-2 ring-white/70 shadow-md shrink-0">
+                <div class="min-w-0">
+                    <h1 class="text-lg md:text-2xl font-extrabold tracking-tight leading-tight truncate">
+                        WebGIS Pangan Batola <span aria-hidden="true">🌾</span>
+                    </h1>
+                    <p class="text-[11px] md:text-sm text-emerald-100/90 truncate">
+                        Peta Produksi Pangan Unggulan Kab. Barito Kuala
+                    </p>
+                </div>
+            </div>
+            <div class="hidden sm:flex items-center gap-2 bg-white/15 rounded-full px-4 py-2 text-xs md:text-sm font-semibold backdrop-blur-sm shrink-0">
+                <span class="w-2 h-2 rounded-full bg-lime-300 animate-pulse"></span>
+                17 Kecamatan
+            </div>
+        </div>
+    </header>
 
-    <center> <br> 
-        <b> Copyright &copy; <span id="year"></span> WebGIS Pangan Batola <br> Made with 🧠 by Ahmad Syaifuddin  </b>
-    </center>
+    <!-- Main -->
+    <main class="w-full max-w-6xl mx-auto px-3 md:px-4 py-5 md:py-7 flex-1">
+
+        <!-- Control bar -->
+        <div class="bg-white rounded-2xl shadow-md border border-slate-200 px-4 md:px-5 py-3.5 mb-4 flex items-center flex-wrap gap-x-8 gap-y-3">
+            <label for="panganSelect" class="flex items-center gap-3">
+                <span class="text-sm md:text-base font-bold text-slate-700">Komoditas</span>
+                <span class="relative">
+                    <select id="panganSelect"
+                            class="appearance-none bg-green-50 border border-green-300 text-green-900 text-sm md:text-base font-semibold rounded-xl pl-4 pr-10 py-2.5 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer hover:bg-green-100 transition">
+                        <option value="PADI">Padi</option>
+                        <option value="JAGUNG">Jagung</option>
+                        <option value="KEDELAI">Kedelai</option>
+                        <option value="KACANG HIJAU">Kacang Hijau</option>
+                        <option value="UBI KAYU">Ubi Kayu</option>
+                        <option value="UBI JALAR">Ubi Jalar</option>
+                    </select>
+                    <svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-green-700"
+                         fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </span>
+            </label>
+
+            <div class="flex items-center gap-2 text-xs md:text-sm text-slate-500">
+                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path>
+                </svg>
+                <span><b class="text-slate-600">Hover</b> juga kecamatan utk detail, <b class="text-slate-600">klik</b> utk zoom &amp; tabel produksi</span>
+            </div>
+
+            <div class="ml-auto hidden lg:flex items-center gap-2 text-xs font-bold text-emerald-700 bg-emerald-50 rounded-full px-3.5 py-1.5 border border-emerald-200">
+                Satuan: Ton / Tahun
+            </div>
+        </div>
+
+        <!-- Map card -->
+        <div class="bg-white rounded-3xl shadow-xl border border-slate-200 ring-1 ring-slate-900/5 overflow-hidden">
+            <div id="map"></div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-green-900 via-emerald-800 to-lime-800 text-white mt-6">
+        <div class="max-w-6xl mx-auto px-4 py-5 text-center text-sm md:text-base">
+            <p class="font-semibold">
+                Copyright &copy; <span id="year"></span> WebGIS Pangan Batola
+            </p>
+            <p class="text-emerald-200/90 text-xs md:text-sm">
+                Made with 🧠 by Ahmad Syaifuddin &middot; Data: BPS Kab. Barito Kuala
+            </p>
+        </div>
+    </footer>
 
     <script>
-        // Get year Dynamic Footer
+        // Tahun dinamis di footer
         document.getElementById("year").innerHTML = new Date().getFullYear();
-
     </script>
 
-
-<!-- Default Statcounter code for Project Pangan GIS BATOLA
-https://project-pangan-gis-batola.vercel.app/ -->
-<script type="text/javascript">
-    var sc_project=13004980; 
-    var sc_invisible=1; 
-    var sc_security="268d6e97"; 
+    <!-- Default Statcounter code for Project Pangan GIS BATOLA
+    https://project-pangan-gis-batola.vercel.app/ -->
+    <script type="text/javascript">
+        var sc_project = 13004980;
+        var sc_invisible = 1;
+        var sc_security = "268d6e97";
     </script>
-    <script type="text/javascript"
-    src="https://www.statcounter.com/counter/counter.js"
-    async></script>
-    <noscript><div class="statcounter"><a title="Web Analytics"
-    href="https://statcounter.com/" target="_blank"><img
-    class="statcounter"
-    src="https://c.statcounter.com/13004980/0/268d6e97/1/"
-    alt="Web Analytics"
-    referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
+    <script type="text/javascript" src="https://www.statcounter.com/counter/counter.js" async></script>
+    <noscript>
+        <div class="statcounter">
+            <a title="Web Analytics" href="https://statcounter.com/" target="_blank">
+                <img class="statcounter" src="https://c.statcounter.com/13004980/0/268d6e97/1/"
+                     alt="Web Analytics" referrerPolicy="no-referrer-when-downgrade">
+            </a>
+        </div>
+    </noscript>
     <!-- End of Statcounter Code -->
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>

@@ -1,13 +1,99 @@
+/* ===== Layout Peta ===== */
 #map {
-    height: 520px;
-    border-radius: 10px;
+    height: 70vh;
+    min-height: 480px;
+    width: 100%;
+    border-radius: 1.5rem;
 }
 
-* {
-    font-family: 'system-ui';
+.leaflet-container {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: #d9f0a3;
+    border-radius: 1.5rem; /* Ikuti card supaya ujung map membulat */
 }
 
-.judul {
-    padding: 1px;
-    text-align: center;
+/* Kursor dan highlight kecamatan */
+.leaflet-interactive {
+    cursor: pointer;
+    transition: fill-opacity 0.15s ease;
+}
+
+/* ===== Panel Info (hover) ===== */
+.info {
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    max-width: 260px;
+}
+
+.info h4 {
+    margin: 0 0 6px;
+    color: #065f46;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.info b {
+    color: #111827;
+}
+
+/* ===== Legend ===== */
+.legend {
+    text-align: left;
+    line-height: 20px;
+    color: #374151;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.legend i {
+    width: 16px;
+    height: 16px;
+    float: left;
+    margin-right: 8px;
+    opacity: 0.85;
+    border-radius: 4px;
+    margin-top: 2px;
+}
+
+/* ===== Tabel popup ===== */
+.leaflet-popup-content {
+    font-family: 'Inter', system-ui, sans-serif;
+    line-height: 1.4;
+}
+
+.popup-title {
+    margin: 0 0 8px;
+    font-weight: 700;
+    color: #065f46;
+    font-size: 14px;
+}
+
+.popup-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.popup-table th,
+.popup-table td {
+    padding: 3px 8px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.popup-table th {
+    color: #6b7280;
+    font-weight: 600;
+}
+
+.popup-table td {
+    font-weight: 700;
+    color: #111827;
+    text-align: right;
 }
